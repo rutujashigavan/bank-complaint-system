@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Secure Bank Login</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="login-page">
+
+  <!-- HEADER -->
+  <header class="header">
+     <button class="back-btn" onclick="window.location.href='index.html'">
+        ← Back
+    </button>
+    <h2>Secure Bank Login</h2>
+  </header>
+
+  <!-- MAIN LOGIN SECTION -->
+  <div class="container">
+
+    <!-- LEFT SIDE -->
+    <div class="left">
+      <div class="overlay">
+        <h1>Welcome Back </h1>
+        <br>
+        <p>Access your account, manage complaints, and track resolutions seamlessly with Secure Bank.</p>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE (FORM) -->
+    <div class="right">
+      <form id="loginForm">
+        <h2>Login</h2>
+
+        <label>Email <span>*</span></label>
+        <input type="email" id="email" required>
+
+        <br>
+
+        <label>Customer ID <span>*</span></label>
+        <input type="text" id="customerId" required>
+
+        <br>
+
+        <label>Password <span>*</span></label>
+        <input type="password" id="password" required>
+
+        <br>
+        <br>
+
+        <button type="submit">Login</button>
+
+        <p id="error"></p>
+
+        <!-- EXTRA LINKS -->
+        <div class="login-links">
+          <a href="#" onclick="forgotPassword()">Forgot Password?</a>
+          <span>| </span> 
+            <span > New User? </span>
+           <a href="register.html"> Register</a>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+
+  <!-- FORGOT PASSWORD MODAL -->
+
+<div class="forgot-modal" id="forgotModal">
+  <div class="forgot-box">
+
+    <span class="forgot-close" onclick="closeForgotModal()">×</span>
+
+    <h2>Reset Password</h2>
+
+    <label>Email <span>*</span></label>
+    <input type="email" id="forgotEmail" placeholder="Enter registered email">
+
+    <button type="button" onclick="sendResetOtp()">Send OTP</button>
+
+    <div id="otpSection" style="display:none;">
+      <label>OTP <span>*</span></label>
+      <input type="text" id="resetOtp" placeholder="Enter OTP">
+
+      <label>New Password <span>*</span></label>
+      <input type="password" id="newPassword" placeholder="Enter new password">
+
+      <button type="button" onclick="resetPassword()">Reset Password</button>
+    </div>
+
+    <p id="forgotMsg"></p>
+
+  </div>
+</div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>© 2026 Secure Bank | All Rights Reserved</p>
+  </footer>
+
+
+
+<script src="../js/login.js"></script>
+</body>
+</html>

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>User Dashboard</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="userDashboard-page">
+
+<div class="user-dashboard__topbar">
+  <div class="user-dashboard__topbar-left">
+    <button class="user-dashboard__menu-btn" onclick="toggleSidebar()">☰</button>
+    <div class="user-dashboard__topbar-title">Secure Bank Dashboard</div>
+  </div>
+
+  <div class="user-dashboard__right">
+    <div onclick="toggleNotifications()" class="user-dashboard__icon">
+      🔔 <span id="notifCount">0</span>
+    </div>
+
+    <div onclick="toggleProfile()" class="user-dashboard__icon">👤</div>
+
+    <div id="notifDropdown" class="user-dashboard__dropdown">
+      <div id="notifList">
+        <div class="user-dashboard__dropdown-item">No notifications yet</div>
+      </div>
+    </div>
+
+    <div id="profileDropdown" class="user-dashboard__dropdown">
+      <div class="user-dashboard__dropdown-item">
+        <b id="profileDropdownName">User</b>
+      </div>
+      <div class="user-dashboard__dropdown-item">
+        Email: <span id="email">---</span>
+      </div>
+      <div class="user-dashboard__dropdown-item">
+        Customer ID: <span id="userId">---</span>
+      </div>
+      <div class="user-dashboard__dropdown-item user-dashboard__danger" onclick="logout()">Logout</div>
+    </div>
+  </div>
+</div>
+
+<div id="sidebar" class="user-dashboard__sidebar">
+  <a href="#" onclick="showDashboard()">Dashboard</a>
+  <a href="#" onclick="showRaiseComplaint()">Raise Complaint</a>
+  <a href="#" onclick="showMyComplaints()">My Complaints</a>
+  <a href="#" onclick="showTrackSection()">Complaint Status</a>
+
+  <div class="user-dashboard__sidebar-group">
+    <div class="user-dashboard__sidebar-toggle" onclick="toggleSidebarSettings()">
+      Settings ▾
+    </div>
+
+    <div id="sidebarSettings" class="user-dashboard__sidebar-submenu">
+      <div class="user-dashboard__sidebar-toggle" onclick="toggleProfileSettings()">
+        Profile ▸
+      </div>
+
+      <div id="profileSettings" class="user-dashboard__sidebar-submenu-inner">
+        <p id="profileName"></p>
+        <p id="profileEmail"></p>
+        <p id="profileId"></p>
+      </div>
+
+      <div class="user-dashboard__toggle">
+        Dark Mode
+        <label class="user-dashboard__switch" for="darkModeToggle">
+          <input type="checkbox" id="darkModeToggle">
+          <span class="user-dashboard__slider"></span>
+        </label>
+      </div>
+
+      <a href="#" onclick="showHelpSection()">Help</a>
+    </div>
+  </div>
+
+  <div class="user-dashboard__danger" onclick="logout()">Logout</div>
+</div>
+
+<div class="user-dashboard__main">
+
+  <section id="dashboardSection" class="dashboard-section active">
+    <div class="user-dashboard__welcome-card">
+      <h2 class="user-dashboard__welcome-title">
+        👋 Welcome Back, <span class="user-dashboard__welcome-name" id="userName">{{userName}}</span>
+      </h2>
+      <p class="user-dashboard__welcome-subtitle">
+        Manage your banking complaints securely and efficiently.
+      </p>
+    </div>
+
+    <div class="user-dashboard__cards">
+      <div class="user-dashboard__card">Total Complaints: <span id="totalComplaints">0</span></div>
+      <div class="user-dashboard__card">Pending: <span id="pendingComplaints">0</span></div>
+      <div class="user-dashboard__card">Resolved: <span id="resolvedComplaints">0</span></div>
+      <div class="user-dashboard__card">Escalated: <span id="escalatedComplaints">0</span></div>
+    </div>
+
+    <div class="user-dashboard__table">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="complaintsTableBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="raiseComplaintSection" class="dashboard-section" style="display:none;">
+    <div class="complaints-page">
+
+      <div id="toast" class="success-toast">
+        Complaint Submitted Successfully
+      </div>
+      
+       <div class="header">
+          <h2>Bank Complaint Portal</h2>
+        </div>
+
+      <div class="container">
+       
+
+        <div class="form-wrapper">
+          <form id="complaintForm" onsubmit="submitComplaint(event)">
+
+            <div class="rows">
+              <div class="form-group">
+                <label class="required">Full Name</label>
+                <input type="text" id="complaintFullName" name="fullName" placeholder="Enter Your Full Name" required>
+              </div>
+
+              <div class="form-group">
+                <label class="required">Email</label>
+                <input type="email" id="complaintEmail" name="email" placeholder="Enter Your Registered Email Address" required>
+              </div>
+
+              <div class="form-group">
+                <label class="required">Customer ID</label>
+                <input type="text" id="complaintCustomerId" name="customerId" placeholder="Enter Customer ID" required>
+              </div>
+
+              <div class="form-group">
+                <label class="required">Mobile Number</label>
+                <input type="text" id="mobile" name="mobile" placeholder="Enter Your Registered Mobile No." required>
+              </div>
+
+              <div class="option">
+                <label class="required">Complaint Category</label>
+                <select id="category" name="category" onchange="handleCategoryChange()" required>
+                  <option value="">Select Category *</option>
+                  <option value="ATM Card Issues">ATM Card Issues</option>
+                  <option value="Debit Card / Credit Card Problems">Debit Card / Credit Card Problems</option>
+                  <option value="Unauthorized Transactions">Unauthorized Transactions</option>
+                  <option value="Net Banking Login Issues">Net Banking Login Issues</option>
+                  <option value="UPI / Payment Failure">UPI / Payment Failure</option>
+                  <option value="Account Freeze / Blocked Account">Account Freeze / Blocked Account</option>
+                  <option value="Loan Related Issues">Loan Related Issues</option>
+                  <option value="Bank Charges Dispute">Bank Charges Dispute</option>
+                  <option value="Cheque / Cheque Bounce Issues">Cheque / Cheque Bounce Issues</option>
+                  <option value="Mobile Banking App Issues">Mobile Banking App Issues</option>
+                  <option value="Account Statement / Balance Issues">Account Statement / Balance Issues</option>
+                  <option value="Other Banking Complaints">Other Banking Complaints</option>
+                </select>
+              </div>
+
+              <div class="option">
+                <label class="required">Complaint Priority</label>
+                <select id="priority" name="priority" required>
+                  <option>Low</option>
+                  <option>Medium</option>
+                  <option>High</option>
+                </select>
+              </div>
+            </div>
+
+            <hr>
+
+            <div id="dynamicFields" class="grid"></div>
+
+            <div class="form-group">
+              <label class="required">Description</label>
+              <textarea id="description" name="description" placeholder="Describe Your Complaint" required></textarea>
+            </div>
+
+            <div class="btn-group">
+              <button type="submit" class="btn-submit">Submit Complaint</button>
+              <button type="button" class="btn-reset" onclick="resetComplaintForm()">Reset</button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="myComplaintsSection" class="dashboard-section history-page" style="display:none;">
+    <div class="container">
+      <div class="header">
+        <h2>My Complaint History</h2>
+        <p>Track all your submitted complaints in one place</p>
+      </div>
+
+      <div class="filters">
+        <button class="active" data-filter="All" onclick="filterComplaints('All', event)">Total</button>
+        <button data-filter="Pending" onclick="filterComplaints('Pending', event)">Pending</button>
+        <button data-filter="Resolved" onclick="filterComplaints('Resolved', event)">Resolved</button>
+        <button data-filter="Escalated" onclick="filterComplaints('Escalated', event)">Escalated</button>
+      </div>
+
+      <div class="user-dashboard__table">
+        <table>
+          <thead>
+            <tr>
+              <th>Complaint ID</th>
+              <th>Date / Time</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="myComplaintsTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="trackSection" class="dashboard-section history-page" style="display:none;">
+    <div class="user-dashboard__table">
+      <table>
+        <thead>
+          <tr>
+            <th>Complaint ID</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="trackTableBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="helpSection" class="dashboard-section help-page" style="display:none;">
+    <h1 class="help-title">Help Center</h1>
+
+    <main class="faq-container">
+      <section class="category">
+        <h2>🔐 Login & Account Issues</h2>
+        <div class="faq"><div class="question">How do I login?</div><div class="answer">Enter your registered email and password on the login page and click login.</div></div>
+        <div class="faq"><div class="question">I forgot my password. What should I do?</div><div class="answer">Click on "Forgot Password" and follow the steps to reset your password via email.</div></div>
+        <div class="faq"><div class="question">Why is my account locked?</div><div class="answer">Too many failed login attempts may lock your account temporarily for security.</div></div>
+        <div class="faq"><div class="question">Can I change my email?</div><div class="answer">Currently, email changes require admin support. Contact help desk.</div></div>
+        <div class="faq"><div class="question">Why am I not receiving OTP?</div><div class="answer">Check your network and spam folder. Try again after some time.</div></div>
+      </section>
+
+      <section class="category">
+        <h2>📝 Complaint Registration</h2>
+        <div class="faq"><div class="question">How do I register a complaint?</div><div class="answer">Login, open Raise Complaint, choose category, fill required fields and submit.</div></div>
+        <div class="faq"><div class="question">What details are required?</div><div class="answer">Name, email, account number, complaint type, and description.</div></div>
+        <div class="faq"><div class="question">Can I edit my complaint?</div><div class="answer">Currently editing is not allowed after submission.</div></div>
+        <div class="faq"><div class="question">How long does it take?</div><div class="answer">Usually complaints are processed within 2-5 working days.</div></div>
+        <div class="faq"><div class="question">Can I attach documents?</div><div class="answer">Attachment feature may be available in future updates.</div></div>
+      </section>
+
+      <section class="category">
+        <h2>📊 Complaint Status</h2>
+        <div class="faq"><div class="question">How do I check complaint status?</div><div class="answer">Login and go to dashboard to view status.</div></div>
+        <div class="faq"><div class="question">What does "Pending" mean?</div><div class="answer">Your complaint is still under review.</div></div>
+        <div class="faq"><div class="question">What does "Resolved" mean?</div><div class="answer">Your issue has been fixed successfully.</div></div>
+        <div class="faq"><div class="question">Can I reopen a complaint?</div><div class="answer">Yes, contact support to reopen it.</div></div>
+        <div class="faq"><div class="question">Why is my complaint delayed?</div><div class="answer">Some issues require deeper investigation, causing delays.</div></div>
+      </section>
+
+      <section class="category">
+        <h2>💳 Banking Issues</h2>
+        <div class="faq"><div class="question">Money deducted but not received?</div><div class="answer">Report it under "Transaction Issue" immediately.</div></div>
+        <div class="faq"><div class="question">Fraud transaction?</div><div class="answer">Block your account and raise a fraud complaint urgently.</div></div>
+        <div class="faq"><div class="question">ATM not dispensing cash?</div><div class="answer">Amount will be refunded within 3-7 days.</div></div>
+        <div class="faq"><div class="question">Wrong transfer?</div><div class="answer">Contact bank support quickly for reversal request.</div></div>
+        <div class="faq"><div class="question">UPI failed but money deducted?</div><div class="answer">Usually auto-refunded within 24-48 hours.</div></div>
+      </section>
+
+      <section class="category">
+        <h2>⚙️ General Help</h2>
+        <div class="faq"><div class="question">Is my data secure?</div><div class="answer">Yes, we use encryption and secure servers.</div></div>
+        <div class="faq"><div class="question">How to contact support?</div><div class="answer">Email: support@bank.com</div></div>
+        <div class="faq"><div class="question">Working hours?</div><div class="answer">9 AM to 6 PM (Mon-Fri)</div></div>
+        <div class="faq"><div class="question">Can I use mobile?</div><div class="answer">Yes, the system is mobile-friendly.</div></div>
+        <div class="faq"><div class="question">Is this service free?</div><div class="answer">Yes, complaint registration is completely free.</div></div>
+      </section>
+    </main>
+  </section>
+
+</div>
+
+<div id="modalContent" class="modal-box" onclick="event.stopPropagation()">
+
+    <button class="close-btn" onclick="closeModal()">
+        ×
+    </button>
+
+    <h2>Complaint Details</h2>
+
+    <p><strong>Complaint ID:</strong>
+      <span id="modalComplaintId"></span>
+    </p>
+
+    <p><strong>Date:</strong>
+      <span id="modalComplaintDate"></span>
+    </p>
+
+    <p><strong>Category:</strong>
+      <span id="modalComplaintCategory"></span>
+    </p>
+
+    <p><strong>Status:</strong>
+      <span id="modalComplaintStatus"></span>
+    </p>
+
+    <p><strong>Priority:</strong>
+      <span id="modalComplaintPriority"></span>
+    </p>
+
+    <p><strong>Description:</strong>
+      <span id="modalComplaintDescription"></span>
+    </p>
+
+    <p><strong>Admin Response:</strong>
+      <span id="modalComplaintAdminResponse"></span>
+    </p>
+
+  </div>
+</div>
+
+<!-- Complaint Details Modal -->
+<div id="modal" class="modal" style="display:none;" onclick="closeModal(event)">
+
+  <div id="modalContent" class="modal-box" onclick="event.stopPropagation()">
+
+  </div>
+
+</div>
+
+<script src="http://localhost:5000/socket.io/socket.io.js"></script>
+<script src="../js/userDashboard.js"></script>
+
+<script>
+function logout(){
+  localStorage.removeItem("loggedInUser");
+  localStorage.removeItem("role");
+  window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>

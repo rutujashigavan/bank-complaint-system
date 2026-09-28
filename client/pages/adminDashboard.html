@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+
+<body class="adminDashboard-page">
+
+  <!-- TOPBAR -->
+  <header class="admin-dashboard__topbar">
+    <div class="admin-dashboard__left">
+      <button class="admin-dashboard__menu-btn" onclick="toggleAdminSidebar()">☰</button>
+      <h2>Secure Bank Admin</h2>
+    </div>
+
+    <div class="admin-dashboard__right">
+      <div class="admin-dashboard__icon" id="adminBellIcon" onclick="toggleAdminNotifications()">
+        🔔 <span id="adminNotifCount">0</span>
+      </div>
+
+      <div class="admin-dashboard__icon" onclick="toggleAdminProfile()">👤</div>
+
+      <div id="adminNotifDropdown" class="admin-dashboard__dropdown">
+        <div id="adminNotifList">
+          <div class="admin-dashboard__dropdown-item">No notifications yet</div>
+        </div>
+      </div>
+
+      <div id="adminProfileDropdown" class="admin-dashboard__dropdown">
+        <div class="admin-dashboard__dropdown-item">
+          <b id="adminName">Admin</b>
+        </div>
+        <div class="admin-dashboard__dropdown-item">
+          Email: <span id="adminEmail">---</span>
+        </div>
+        <div class="admin-dashboard__dropdown-item">
+          Admin ID: <span id="adminId">---</span>
+        </div>
+        <div class="admin-dashboard__dropdown-item admin-dashboard__danger" onclick="adminLogout()">
+          Logout
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <aside id="adminSidebar" class="admin-dashboard__sidebar">
+    <a href="#" class="active" onclick="showAdminSection('dashboard', event)">Dashboard</a>
+    <a href="#" onclick="showAdminSection('allComplaints', event)">All Complaints</a>
+    <a href="#" onclick="showAdminSection('analytics', event)">Analytics</a>
+
+    <div class="admin-dashboard__sidebar-group">
+  <div onclick="toggleAdminSettingsMenu()">Settings ▾</div>
+
+  <div id="adminSettingsMenu" class="admin-dashboard__sidebar-submenu">
+
+    <div class="admin-dashboard__sidebar-profile">
+      <b>Profile</b>
+      <p>Email: <span id="sidebarAdminEmail">---</span></p>
+      <p>Admin ID: <span id="sidebarAdminId">---</span></p>
+    </div>
+
+    <div class="admin-dashboard__settings-option">
+      <span>Dark Mode</span>
+      <label class="admin-dashboard__mini-switch">
+        <input type="checkbox" id="adminDarkModeToggle" onchange="changeAdminThemeFromToggle()">
+        <span class="admin-dashboard__mini-slider"></span>
+      </label>
+    </div>
+
+    <div class="admin-dashboard__settings-option">
+      <span>Notifications</span>
+      <label class="admin-dashboard__mini-switch">
+        <input type="checkbox" id="adminNotificationToggle" onchange="changeAdminNotificationSetting()">
+        <span class="admin-dashboard__mini-slider"></span>
+      </label>
+    </div>
+
+  </div>
+</div>
+
+    <div class="admin-dashboard__danger" onclick="adminLogout()">Logout</div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="admin-dashboard__main">
+
+    <!-- DASHBOARD PAGE -->
+    <section id="dashboardPage" class="admin-dashboard__page active">
+
+      <section class="admin-dashboard__welcome">
+        <h1>Welcome Back, <span id="adminWelcomeName">Admin</span></h1>
+        <p>Manage complaints securely and monitor bank complaint activity.</p>
+      </section>
+
+      <section class="admin-dashboard__stats">
+        <div class="admin-dashboard__stat-card">
+          <h3>Total Complaints</h3>
+          <p id="adminTotalComplaints">0</p>
+        </div>
+
+        <div class="admin-dashboard__stat-card pending">
+          <h3>Pending</h3>
+          <p id="adminPendingComplaints">0</p>
+        </div>
+
+        <div class="admin-dashboard__stat-card resolved">
+          <h3>Resolved</h3>
+          <p id="adminResolvedComplaints">0</p>
+        </div>
+
+        <div class="admin-dashboard__stat-card escalated">
+          <h3>Escalated</h3>
+          <p id="adminEscalatedComplaints">0</p>
+        </div>
+
+        <div class="admin-dashboard__stat-card rejected">
+          <h3>Rejected</h3>
+          <p id="adminRejectedComplaints">0</p>
+        </div>
+      </section>
+
+      <section class="admin-dashboard__section">
+        <div class="admin-dashboard__section-header">
+          <div>
+            <h2>Total Complaint Table</h2>
+            <p>Latest complaints overview.</p>
+          </div>
+        </div>
+
+        <div class="admin-dashboard__table-wrapper">
+          <table class="admin-dashboard__table">
+            <thead>
+              <tr>
+                <th>Complaint ID</th>
+                <th>User Email</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+
+            <tbody id="dashboardComplaintsTableBody">
+              <tr>
+                <td colspan="5">Loading complaints...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </section>
+
+    <!-- ALL COMPLAINTS PAGE -->
+    <section id="allComplaintsPage" class="admin-dashboard__page">
+
+      <section class="admin-dashboard__section">
+        <div class="admin-dashboard__section-header">
+          <div>
+            <h2>All Complaints</h2>
+            <p>View complaint details and perform admin actions.</p>
+          </div>
+
+          <div class="admin-dashboard__status-tabs">
+            <button class="active" onclick="filterByStatus('All', event)">All</button>
+            <button onclick="filterByStatus('Pending', event)">Pending</button>
+            <button onclick="filterByStatus('Resolved', event)">Resolved</button>
+            <button onclick="filterByStatus('Escalated', event)">Escalated</button>
+            <button onclick="filterByStatus('Rejected', event)">Rejected</button>
+          </div>
+
+          <div class="admin-dashboard__filters">
+            <input type="text" id="adminSearchInput" placeholder="Search complaint..." />
+
+            <select id="adminStatusFilter">
+              <option value="All">All</option>
+              <option value="Pending">Pending</option>
+              <option value="Resolved">Resolved</option>
+              <option value="Escalated">Escalated</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="admin-dashboard__table-wrapper">
+          <table class="admin-dashboard__table">
+            <thead>
+              <tr>
+                <th>Complaint ID</th>
+                <th>User Email</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody id="adminComplaintsTableBody">
+              <tr>
+                <td colspan="6">Loading complaints...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </section>
+
+    <!-- ANALYTICS PAGE -->
+    <section id="analyticsPage" class="admin-dashboard__page">
+
+      <section class="admin-dashboard__section">
+        <div class="admin-dashboard__section-header">
+          <div>
+            <h2>Analytics</h2>
+            <p>Complaint statistics and downloadable reports.</p>
+          </div>
+
+          <button class="admin-dashboard__export-btn" onclick="exportComplaintsCSV()">
+            Export CSV
+          </button>
+        </div>
+
+        <section class="admin-dashboard__stats">
+          <div class="admin-dashboard__stat-card">
+            <h3>Total Complaints</h3>
+            <p id="analyticsTotalComplaints">0</p>
+          </div>
+
+          <div class="admin-dashboard__stat-card pending">
+            <h3>Pending</h3>
+            <p id="analyticsPendingComplaints">0</p>
+          </div>
+
+          <div class="admin-dashboard__stat-card resolved">
+            <h3>Resolved</h3>
+            <p id="analyticsResolvedComplaints">0</p>
+          </div>
+
+          <div class="admin-dashboard__stat-card escalated">
+            <h3>Escalated</h3>
+            <p id="analyticsEscalatedComplaints">0</p>
+          </div>
+
+          <div class="admin-dashboard__stat-card rejected">
+            <h3>Rejected</h3>
+            <p id="analyticsRejectedComplaints">0</p>
+          </div>
+        </section>
+      </section>
+
+    </section>
+
+  </main>
+
+  <!-- MODAL -->
+  <div id="adminComplaintModal" class="admin-dashboard__modal">
+    <div class="admin-dashboard__modal-content">
+      <button class="admin-dashboard__modal-close" onclick="closeAdminModal()">×</button>
+      <div id="adminModalContent"></div>
+    </div>
+  </div>
+
+  <div id="adminToast" class="admin-dashboard__toast"></div>
+
+  <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+  <script src="../js/adminDashboard.js"></script>
+
+</body>
+</html>
